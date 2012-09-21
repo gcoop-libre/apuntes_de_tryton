@@ -1,15 +1,10 @@
-=============================
-Apuntes introducción a Tryton
-=============================
+=========
+Desarollo
+=========
 
-.. contents:: 
+Estas notas corresponden a la parte técnica del curso.
 
-Abstract
-========
-
-La idea de este artículo es volcar apuntes del curso de Tryton en Thymbra. 
-
-Esta documentación es la parte ténica del curso.
+.. contents:: Indice
 
 Tryton como framework
 =====================

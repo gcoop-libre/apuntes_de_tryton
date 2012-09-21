@@ -1,5 +1,10 @@
-.. contents:: Indice
 
+Funcional
+=========
+
+Estas notas corresponde a la parte funcional del curso.
+
+.. contents:: Indice
 
 ================
 Instalar módulos
@@ -232,27 +237,27 @@ Puede configurarse que sea fijo, remanente, porcentaje sobre total o sobre el re
 Localización
 ============
 
-La localización que hace Thymbra está en el `Wiki de Tryton Argentina<http://wiki.tryton.com.ar/LocalizacionArgentina>`_ que es un wiki que mantienen ellos, que pero aparentemente quieren que sea comunitario.
+La localización que hace Thymbra está en el `Wiki de Tryton Argentina <http://wiki.tryton.com.ar/LocalizacionArgentina>`_ que es un wiki que mantienen ellos, que pero aparentemente quieren que sea comunitario.
 
 
 Módulo account_ar
 -----------------
 Bajamos e instalamos el módulo:
 
-`account_ar<https://bitbucket.org/thymbra/account_ar/overview>`_
+`account_ar <https://bitbucket.org/thymbra/account_ar/overview>`_
 
 Hay que ir al módulo Contabilidad -> Planes contables -> Crear plan contable desde plantilla y seleccionar el Template Plan contable argentino.
 
 Luego instalamos el módulo:
 
-`account_bank_ar<https://bitbucket.org/thymbra/account_bank_ar/overview>`_
+`account_bank_ar <https://bitbucket.org/thymbra/account_bank_ar/overview>`_
 
 que son todos los bancos de argentina con sus datos
 
 Luego de instalado esto hayq ue ir a Entidades -> Empresas -> Emrpesas seleccionar mi empresa y configurarle la cuenta bancaria, en nuestro caso elegimos el Credicoop ;-)
 
 Instalamos el módulo:
-`account_voucher_ar<https://bitbucket.org/thymbra/account_voucher_ar/downloads>`_
+`account_voucher_ar <https://bitbucket.org/thymbra/account_voucher_ar/downloads>`_
 
 es un módulo que provee pagos y cobros.
 
@@ -272,7 +277,7 @@ Para el caso de las ventas es similar:
  
 
 Instalamos el módulo:
-`account_check_ar<https://bitbucket.org/thymbra/account_check_ar/downloads>`_
+`account_check_ar <https://bitbucket.org/thymbra/account_check_ar/downloads>`_
 
 Este módulo agrega el menú de Tesorería dentro de Contabilidad.
 Además agrega una solapa en los Diarios. Ahí configuro las cuentas contables donde van los cheques recibidos y los cheques emitidos. (Para la ver 2.4 falta la opción de cheque rechazado)
