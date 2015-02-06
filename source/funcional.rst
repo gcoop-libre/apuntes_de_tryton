@@ -2,7 +2,7 @@
 Funcional
 =========
 
-Estas notas corresponde a la parte funcional del curso.
+Estas notas corresponden a la parte funcional del curso.
 
 .. contents:: Indice
 
