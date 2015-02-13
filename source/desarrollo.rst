@@ -6,117 +6,84 @@ Estas notas corresponden a la parte técnica del curso.
 
 .. contents:: Indice
 
+	      
 Tryton como framework
 =====================
 
 Por un lado el curso que estoy haciendo (LucianoRossi) es la parte técnica. El enfoque
 del curso es mirar a tryton como un framework y no como un ERP.
 
-La instalación en la que nos estamos basando es la versión 2.4.0.
+La instalación en la que nos basamos originalmente es la versión 2.4, actualizada a la 3.4.
 
-La documentación oficial de instalación: http://doc.tryton.org/2.4/trytond/doc/topics/install.html
+La documentación oficial de instalación: http://doc.tryton.org/3.4/ .
 
 Según la guia de instalación debemos instalar previamente algunos paquetes además de postgresql. Tryton puede trabajar con base de datos como postgresql, mysql, sqlite, etc. 
 
-Tryton tiene un sistema de comunicación CLIENTE - SERVIDOR. La comunicación que se usa es jsonrpc. Uno podría desarrollar
-una aplicación cliente y comunicarse vía jsonrpc con el servidor tryton. Las modificaciones que vamos a hacer durante el curso
-son a los módulos que corren en el servidor. Tryton es bien modular y por lo visto, no es necesario hacer modificaciones al core.
+Tryton tiene un sistema de comunicación CLIENTE - SERVIDOR. La comunicación que se usa es jsonrpc. Uno podría desarrollar una aplicación cliente y comunicarse vía jsonrpc con el servidor tryton. Las modificaciones que vamos a hacer durante el curso son a los módulos que corren en el servidor. Tryton es bien modular y por lo visto, no es necesario hacer modificaciones al core.
 
 Por un lado tenemos los .py que van a contener las clases, métodos. Luego tenemos archivos .xml que contiene las definiciones de las vistas. Las vistas se diferencian entre las que son tree y form. Tree son listas (listview) y form son detail y edit.
 
-Requerimientos
+
+Instalación
 --------------
 
-https://code.google.com/p/tryton/wiki/Requirements
+Para la versión 3.4 estamos instalando de la siguiente manera:
 
-Instalar los siguientes paquetes (Debian y similares)::
+ * instalar los paquetes necesarios para ejecutar y desarrollar sobre el servidor::
 
-     apt-get install postgresql python-psycopg2 python-lxml python-dateutil  python-genshi  python-relatorio mercurial python-polib
+     apt-get install \
+           python-dev swig python-pip python-lxml libxml2-dev libxslt-dev \
+           postgresql postgresql-client postgresql-server-dev-all libpq-dev \
+           make git mercurial.
+   
+   * si queremos generar pdfs, es necesario instalar dos paquetes más::
 
-Desde archlinux se pueden instalar usando yaourt. Recordar que se deben usar las versión de python2. python3 NO esta soportado.
+       apt-get install libreoffice-java-common python-uno.
+     
+ * instalar el virtualenvwrapper::
 
-Instalación y configuración de Postgresql 8.4
-_____________________________________________
+     pip install virtualenvwrapper.
 
-Para que los clientes accedan a la base de datos remotamente. Editar el archivo `/etc/postgresql/8.4/main/postgresql.conf` y descomentar la linea::
+ * crear el entorno virtual para nuestro servidor y activarlo::
 
-   listen_addresses = '*'
+     mkvirtualenv tryton
+     workon tryton
 
-Allow openerp-server to connect to postgresql: editar `/etc/postgresql/8.4/main/pg_hba.conf`. Modificar las siguientes lineas::
+ * instalar los módulos de python::
 
-    # TYPE  DATABASE    USER        CIDR-ADDRESS          METHOD
-    
-    # "local" is for Unix domain socket connections only
-    # MODIFY THE EXISTING LINE TO LOOK LIKE THIS:
-    local   all         all                               trust
-    # IPv4 local connections:
-    # MODIFY THE EXISTING LINE TO LOOK LIKE THIS:
-    host    all         all         127.0.0.1/32          trust
-    # ADD THIS LINE TO ALLOW REMOTE ACCESS; use your own IP address range:
-    host    all         all         192.168.10.0/24        trust
-    # IPv6 local connections:
-    host    all         all         ::1/128               ident
+     pip install \
+           trytond psycopg2 pytz vatnumber suds vobject proteus Genshi \
+	   argparse lxml polib python-dateutil python-sql relatorio six.
 
-Restartear el posgrqsql::
+ * configurar el usuario en postgresql::
 
-   /etc/init.d/postgresql restart
+     sudo su postgres -c 'createuser --createdb --no-adduser -P Tryton'
+
+   * para la clave podemos usar ``tryton``.
+   * si no cambiamos la configuración el servidor postgresql responderá sólo a localhost.
 
 
-Configuramos el usuario postgresql
-----------------------------------
+ * modificar la configuración del servidor ``trytond`` en ``etc/trytond.conf``::
 
-::
-    
-    su - postgres
-    createuser --createdb --no-createrole --pwprompt tryton
-    Enter password for new role: .....  ### tryton
-    Enter it again: .....               ### tryton
-    Shall the new role be a superuser? (y/n) y
+     [jsonrpc]
+     listen=*:8000
+     data=/var/lib/trytond
+     
+     [database]
+     uri=postgresql://tryton:tryton@localhost:5432
+     path=/var/lib/trytond # directorio donde se guardaran los adjuntos
+     
+     [session]
+     timeout=3600
+     super_pwd=hrNNibAnqs1ng
 
-Tryton servidor
-================
+   * el crypt indicado en ``super_pwd`` corresponde a la clave ``tryton``. de ser necesario puede generarse un crypt para otra clave con el siguiente comando::
 
-Ir a la url: http://downloads1.tryton.org/2.4/trytond-2.4.0.tar.gz y bajar la versión 2.4.0 de trytond
+       python -c 'import getpass,crypt,random,string; print crypt.crypt(getpass.getpass(), \
+                  "".join(random.sample(string.ascii_letters + string.digits, 8)))'
 
-Descomprimirlo en alguna carpeta.
+ * para correr el servidor ejecutar el comando ``trytond``.
 
-La configuración esta en el archivo etc/trytond.conf
-
-etc/trytond.conf
-----------------
-
-Modificar la linea de jsonrpc por::
-
-   jsonrpc = *:8000
-
-De esta manera, el servidor jsonrpc se comunica con cualquier cliente que este en la red.
-
-Configurar la conexión a la base de datos. Cual es el usuario y password que utiliza el servidor
-para conectarse a la base de datos. En este caso, postgresql::
-
-    db_host = localhost
-    db_port = 5432
-    db_user = tryton
-    db_password = tryton
-
-Configuración de timezone::
-
-    # Timezone of the server
-    timezone = America/Argentina/Buenos_Aires
-
-.. note:: Si en el cliente se configura el timezone del usuario, entonces se DEBE aclarar en el servidor cual timezone debe usar en el servidor. mas info: http://bugs.tryton.org/issue2449
-
-Por último, y no menos importante es la password de comunicación entre el cliente y el servidor::
-
-    admin_passwd = admin
-
-.. note:: Le podemos dejar admin o cambiar por otra.
-
-Ahora debemos comenzar a correr el servidor::
-
-   bin/trytond
-
-.. note :: En archlinux tuve que explicitar que corra python2 ya que en arch python es python3.
 
 Modulos
 =======
@@ -125,32 +92,35 @@ Los módulos (party, company, account, sale, etc) se instalan en trytond/trytond
 
 Cuando bajamos un módulo tryton debemos mirar los archivos::
 
-   __tryton__.py
+   tryton.cfg
    __init__.py
 
-En __tryton__ encontramos algunas descripción del módulo y también cuales son sus dependencias. Debemos verificar si tenemos todos los módulos que nos piden para poder activarlos.
+En tryton.cfg encontramos alguna descripción del módulo y también cuales son sus dependencias. Debemos verificar si tenemos todos los módulos que nos piden para poder activarlos. Si el módulo se instaló usando ``pip`` sus dependencias normalmente se resuelven automágicamente.
 
 Al crear los enlaces simbólicos y tenerlos en la carpeta modulos, debemos updatear el servidor, para que popule nuevamente la base de datos avisandole que han habido modificaciones y que tenemos nuevos módulos para poder instalar::
 
-    bin/trytond --update=all -d NOMBRE_BASE_CREADA
+    bin/trytond --config=etc/tryton.conf --database=tryton --all
+
 
 Actualización de módulos
 -------------------------
 
-¿Cuando se debe ejecutar la linea --update=all?
+¿Cuando se debe ejecutar la opción ``--all``?
 
 Al modificar los archivos .py los cambios se toman al momento. 
 
 Si se agrega un nuevo field, o se modifica la vista (xml) se debe ejecutar --update=all para que cree en field en la base de datos, 
 o popule la metadata de la vista nuevamente. Esto aclara que NO esta leyendo el xml cada vez que ejecuta el servidor.
 
+
 Primer Modulo
 =============
+
 
 Fields
 ------
 
-Dentro de la clase fields estan los tipos de campos. Char, Many2One, Many2Many, Boolean, etc. 
+Dentro de la clase fields estan los tipos de campos: Char, Many2One, Many2Many, Boolean, etc. 
 Impactan tanto en la base de datos, como en las vistas. 
 
 Un ejemplo de declaración de campos para un modelo:
