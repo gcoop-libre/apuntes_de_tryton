@@ -34,15 +34,15 @@ Para la versión 3.4 estamos instalando de la siguiente manera:
      apt-get install \
            python-dev swig python-pip python-lxml libxml2-dev libxslt-dev \
            postgresql postgresql-client postgresql-server-dev-all libpq-dev \
-           make git mercurial.
+           make git mercurial
    
    * si queremos generar pdfs, es necesario instalar dos paquetes más::
 
-       apt-get install libreoffice-java-common python-uno.
+       apt-get install libreoffice-java-common python-uno
      
  * instalar el virtualenvwrapper::
 
-     pip install virtualenvwrapper.
+     pip install virtualenvwrapper
 
  * crear el entorno virtual para nuestro servidor y activarlo::
 
@@ -53,7 +53,7 @@ Para la versión 3.4 estamos instalando de la siguiente manera:
 
      pip install \
            trytond psycopg2 pytz vatnumber suds vobject proteus Genshi \
-	   argparse lxml polib python-dateutil python-sql relatorio six.
+	   argparse lxml polib python-dateutil python-sql relatorio six
 
  * configurar el usuario en postgresql::
 
