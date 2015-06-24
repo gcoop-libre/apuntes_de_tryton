@@ -1,6 +1,6 @@
-=========
-Desarollo
-=========
+==========
+Desarrollo
+==========
 
 Estas notas corresponden a la parte técnica del curso.
 
